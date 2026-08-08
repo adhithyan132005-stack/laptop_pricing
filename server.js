@@ -5,7 +5,7 @@ const connectDB=require("../Backend/config/db")
 const router=require("./Routes/userRoute")
 const componentRouter=require("./Routes/componentRoute")
 const configureRouter=require("./Routes/configurationRoute")
-const port=6000;
+const port=process.env.PORT || 5000;
 
 dotenv.config()
 

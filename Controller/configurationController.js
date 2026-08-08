@@ -89,7 +89,7 @@ configurationController.getconfiguration=async(req,res)=>{
       .populate("operatingSystem")
       .sort({ createdAt: -1 });
 
-      res.status(200).json({count:configurations.length,configurations})
+        res.status(200).json({count:configurations.length,configurations, totalPrice: configurations.map(c => c.totalPrice)})
 
     }catch(err){
         res.status(500).json({message:err.message})
@@ -255,7 +255,7 @@ configurationController.dashboard = async (req, res) => {
     const configurations = await LaptopConfiguration.find();
 
     const totalRevenue = configurations.reduce(
-      (sum, config) => sum + config.totalPrice,
+      (sum, config) => sum + (config.totalPrice || 0),
       0
     );
 

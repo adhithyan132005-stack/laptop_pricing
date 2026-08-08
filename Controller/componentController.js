@@ -3,12 +3,12 @@ const componentcontroller={}
  componentcontroller.create=async(req,res)=>{
     try{
         const{type,name,price}=req.body
-        if(!type || !name|| !price===undefined){
-            return re.status(400).json({message:"all fields are required"})
+        if(!type || !name || price === undefined || price === ""){
+            return res.status(400).json({message:"all fields are required"})
         }
-        const component=new Component({type,name,price})
+        const component = new Component({type, name, price: Number(price), priceHistory: [{price: Number(price), date: new Date()}]});
         await component.save()
-        res.status(500).json({message:"component created successfully",component})
+        res.status(201).json({message:"component created successfully",component})
     }catch(err){
         res.status(500).json({message:err.message})
     }
@@ -39,11 +39,20 @@ componentcontroller.update=async(req,res)=>{
     const id=req.params.id
     const body=req.body
     try{
-        const component=await Component.findByIdAndUpdate(id,body,{new:true})
-     if(!component){
-            return res.status({message:"component not found"})
+        const existing = await Component.findById(id);
+        if (!existing) {
+            return res.status(404).json({message:"component not found"});
         }
-        return res.status(200).json({message:"component updated successfuly ",component})
+    
+        if (body.price !== undefined && Number(body.price) !== existing.price) {
+            existing.priceHistory.push({price: Number(body.price), date: new Date()});
+            existing.price = Number(body.price);
+        }
+        
+        if (body.type) existing.type = body.type;
+        if (body.name) existing.name = body.name;
+        await existing.save();
+        return res.status(200).json({message:"component updated successfully", component: existing});
 
     }catch(err){
         res.status(500).json({message:err.message})

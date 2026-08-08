@@ -58,6 +58,6 @@ const laptopConfigurationSchema=new mongoose.Schema({
          keyboard: Number,
          operatingSystem: Number,
     },
-    totalprice:Number
+    totalPrice:{ type:Number, default:0 }
 },{timestamps:true})
 module.exports=mongoose.model("LaptopConfiguration",laptopConfigurationSchema)
